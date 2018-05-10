@@ -23,7 +23,7 @@ import java.util.Date;
  * Timestamp API implementation
  *
  * @author Fedorov Konstantin (mr.fedorov.konstantin@mail.ru)
- * @version 0.1
+ * @version 0.2-SNAPSHOT
  * Created on 17.01.2018.
  */
 public class Timestamp {
