@@ -22,7 +22,7 @@ import org.junit.Test;
  * Generic description
  *
  * @author Fedorov Konstantin (mr.fedorov.konstantin@mail.ru)
- * @version 0.2-SNAPSHOT
+ * @version 0.3-SNAPSHOT
  * Created on 10.05.2018.
  */
 public class TimestampTest {

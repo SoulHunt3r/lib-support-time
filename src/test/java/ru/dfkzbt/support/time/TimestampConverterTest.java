@@ -26,7 +26,7 @@ import static org.junit.Assert.assertEquals;
  * Generic description
  *
  * @author Fedorov Konstantin (mr.fedorov.konstantin@mail.ru)
- * @version 0.1.0 [MAJOR.MINOR.PATCH]
+ * @version 0.3-SNAPSHOT
  * Created on 22.03.2019.
  */
 public class TimestampConverterTest {

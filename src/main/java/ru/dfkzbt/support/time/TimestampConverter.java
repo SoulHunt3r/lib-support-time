@@ -24,20 +24,21 @@ import java.util.Objects;
  * Generic description
  *
  * @author Fedorov Konstantin (mr.fedorov.konstantin@mail.ru)
- * @version 0.1.0 [MAJOR.MINOR.PATCH]
+ * @version 0.3-SNAPSHOT
  * Created on 22.03.2019.
  */
 public class TimestampConverter {
     private Instant instant;
 
+    // blocking ctor
     private TimestampConverter() {
     }
 
     /**
-     * create class using 4-byte timestamp (seconds)
+     * create instance of TimestampConverter from timestamp containing seconds
      *
-     * @param timestamp
-     * @return
+     * @param timestamp containing seconds
+     * @return instance of TimestampConverter
      */
     public static TimestampConverter createSeconds(long timestamp) {
         return new TimestampConverter()
@@ -45,44 +46,76 @@ public class TimestampConverter {
     }
 
     /**
-     * create class using 4-byte timestamp (seconds)
-     */
-    public static TimestampConverter createSeconds(int first, int second) {
-        return createSeconds(convertSeconds(first, second));
-    }
-
-    /**
-     * create class using 4-byte timestamp (seconds)
-     */
-    public static TimestampConverter createSeconds(byte[] array) {
-        return createSeconds(convertSeconds(array));
-    }
-
-    /**
-     * create class using 8-byte Unix timestamp (milliseconds)
+     * create instance of TimestampConverter from timestamp containing milliseconds
      *
-     * @param timestamp
-     * @return
+     * @param timestamp containing milliseconds
+     * @return instance of TimestampConverter
      */
     public static TimestampConverter createMillis(long timestamp) {
         return new TimestampConverter()
                 .setTimestampMillis(timestamp);
     }
 
-    public long getSeconds() {
-        return instant.getEpochSecond();
-    }
-
-    public long getMillis() {
-        return instant.toEpochMilli();
-    }
-
-    public Instant getInstant() {
-        return instant;
+    /**
+     * create instance of TimestampConverter from timestamp containing seconds
+     * splitted in two words,
+     *
+     * @param first
+     * @param second
+     * @return instance of TimestampConverter
+     */
+    public static TimestampConverter createSecondsDirect(int first, int second) {
+        return createSeconds(directSeconds(first, second));
     }
 
     /**
-     * create 4-byte timestamp limited to seconds from 2 words, reverted order
+     * create instance of TimestampConverter from timestamp containing seconds
+     * splitted in two words,
+     * using reversed word order
+     *
+     * @param first
+     * @param second
+     * @return instance of TimestampConverter
+     */
+    public static TimestampConverter createSecondsReversed(int first, int second) {
+        return createSeconds(convertSeconds(first, second));
+    }
+
+    /**
+     * create class using 4-byte timestamp (seconds)
+     *
+     * @param array
+     * @return instance of TimestampConverter
+     */
+    public static TimestampConverter createSecondsDirect(byte[] array) {
+        return createSeconds(convertSeconds(swapWords4(array)));
+    }
+
+    /**
+     * create class using 4-byte timestamp (seconds)
+     *
+     * @param array
+     * @return instance of TimestampConverter
+     */
+    public static TimestampConverter createSecondsReversed(byte[] array) {
+        return createSeconds(convertSeconds(array));
+    }
+
+    /**
+     * create long timestamp limited to seconds from 2 words
+     * using direct word order
+     *
+     * @param first  2 byte word value that comes first
+     * @param second 2 byte word value that comes second
+     * @return timestamp as long
+     */
+    public static long directSeconds(int first, int second) {
+        return ByteBuffer.allocate(8).putInt(0).putShort((short) first).putShort((short) second).getLong(0);
+    }
+
+    /**
+     * create long timestamp limited to seconds from 2 words
+     * using reversed word order
      *
      * @param first  2 byte word value that comes first
      * @param second 2 byte word value that comes second
@@ -93,7 +126,8 @@ public class TimestampConverter {
     }
 
     /**
-     * create 4-byte timestamp limited to seconds from 4-byte array
+     * create long timestamp limited to seconds from 4-byte array
+     * using reversed word order
      *
      * @param array 4 byte array containing timestamp
      * @return timestamp as long
@@ -108,6 +142,48 @@ public class TimestampConverter {
                 .put(array[0])
                 .put(array[1])
                 .getLong(0);
+    }
+
+    /**
+     * swap words in array
+     * @param array
+     * @return
+     */
+    public static byte[] swapWords4(byte[] array){
+        if (array.length != 4) throw new IllegalArgumentException("array size must be 4");
+
+        return ByteBuffer.allocate(4)
+                .put(array[2])
+                .put(array[3])
+                .put(array[0])
+                .put(array[1])
+                .array();
+    }
+
+    public long getSeconds() {
+        return instant.getEpochSecond();
+    }
+
+    public byte[] getSecondsArray(){
+        byte[] temp = ByteBuffer.allocate(8)
+                .putLong(getSeconds())
+                .array();
+
+        return ByteBuffer.allocate(4).put(temp,4,4).array();
+    }
+
+    public long getMillis() {
+        return instant.toEpochMilli();
+    }
+
+    public byte[] getMillisArray(){
+        return ByteBuffer.allocate(8)
+                .putLong(getMillis())
+                .array();
+    }
+
+    public Instant getInstant() {
+        return instant;
     }
 
     private TimestampConverter setTimestampSeconds(Long timestamp) {
@@ -136,5 +212,33 @@ public class TimestampConverter {
     @Override
     public int hashCode() {
         return Objects.hash(getInstant());
+    }
+
+
+    // DEPRECATIONS
+
+    /**
+     * create instance of TimestampConverter from timestamp containing seconds
+     * splitted in two words,
+     * using reversed word order
+     *
+     * @param first
+     * @param second
+     * @return instance of TimestampConverter
+     */
+    @Deprecated
+    public static TimestampConverter createSeconds(int first, int second) {
+        return createSecondsReversed(first, second);
+    }
+
+    /**
+     * create class using 4-byte timestamp (seconds)
+     *
+     * @param array
+     * @return instance of TimestampConverter
+     */
+    @Deprecated
+    public static TimestampConverter createSeconds(byte[] array) {
+        return createSecondsReversed(array);
     }
 }

@@ -24,7 +24,7 @@ import java.util.TimeZone;
  * Generic description
  *
  * @author Fedorov Konstantin (mr.fedorov.konstantin@mail.ru)
- * @version 0.2-SNAPSHOT
+ * @version 0.3-SNAPSHOT
  * Created on 18.05.2018.
  */
 public class DateUtils {
