@@ -5,7 +5,7 @@
     <groupId>ru.dfkzbt.support</groupId>
     <artifactId>lib-support-time</artifactId>
     <packaging>jar</packaging>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3</version>
 
     <name>lib-support-time</name>
     <url>http://maven.apache.org</url>
